@@ -1,0 +1,45 @@
+version: '3.3'
+services:
+
+# Update sinle container command : docker-compose up -d --no-deps db
+  db:
+    image: mariadb:10.4.21
+    container_name: db
+    network_mode: host
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql/data
+    environment:
+      - MYSQL_ROOT_PASSWORD=lfsdkgj@etwe456otpreDSFdsf34rer
+
+# Container Docs https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+    network_mode: host
+    #ports:
+    #  - 9200:9200
+    restart: always
+    container_name: elasticsearch
+    environment:
+      - node.name=magento
+      - discovery.type=single-node
+      - number_of_shards=1
+      - "ES_JAVA_OPTS=-Xms212m -Xmx212m"
+    volumes:
+      - elastic-data:/var/lib/mysql/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  redis:
+    image: redis:alpine3.13
+    container_name: redis
+    network_mode: host
+    restart: always
+    entrypoint: [redis-server, --save '', --databases 10000]
+      
+volumes:
+#  magento-data:
+  db-data:
+  elastic-data:
